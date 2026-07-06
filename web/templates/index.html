@@ -1,0 +1,137 @@
+<title>Spotifoni</title>
+<style>
+  :root {
+    --bg: #F3EEE4; --surface: #EAE4D7; --text: #2A3038;
+    --text-sec: #6B7280; --border: #D1C9B5; --accent: #B87333;
+    --ok: #2A6344; --err: #C83E34;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #151820; --surface: #1D2130; --text: #CCC5B5;
+      --text-sec: #7A7768; --border: #2C3040; --accent: #D49555;
+      --ok: #4A9; --err: #E06858;
+    }
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: system-ui, sans-serif; background: var(--bg); color: var(--text);
+    max-width: 480px; margin: 0 auto; padding: 24px 16px;
+  }
+  h1 { font-size: 20px; font-weight: 350; margin-bottom: 24px; }
+  .eyebrow {
+    font-family: ui-monospace, monospace; font-size: 11px; font-weight: 600;
+    letter-spacing: 0.15em; color: var(--accent); margin-bottom: 4px;
+  }
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px; margin-bottom: 16px;
+  }
+  .card h2 {
+    font-family: ui-monospace, monospace; font-size: 10px; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .svc-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 6px 0; font-size: 14px;
+  }
+  .svc-row + .svc-row { border-top: 1px solid var(--border); }
+  .badge {
+    font-family: ui-monospace, monospace; font-size: 11px; font-weight: 600;
+    padding: 2px 8px; border-radius: 3px;
+  }
+  .badge.active { color: var(--ok); background: rgba(42,99,68,0.15); }
+  .badge.inactive { color: var(--err); background: rgba(200,62,52,0.15); }
+  .volume-wrap { display: flex; align-items: center; gap: 12px; }
+  input[type=range] { flex: 1; accent-color: var(--accent); }
+  .vol-label { font-family: ui-monospace, monospace; font-size: 13px; min-width: 36px; text-align: right; }
+  button {
+    font-family: ui-monospace, monospace; font-size: 11px; font-weight: 600;
+    padding: 6px 14px; border-radius: 4px; border: 1px solid var(--border);
+    background: var(--surface); color: var(--text); cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn-danger { color: var(--err); border-color: var(--err); }
+  .btn-danger:hover { background: var(--err); color: white; }
+  #devices { font-size: 13px; color: var(--text-sec); }
+</style>
+
+<span class="eyebrow">Spotifoni</span>
+<h1>Configuration</h1>
+
+<div class="card">
+  <h2>Services</h2>
+  <div id="services"></div>
+</div>
+
+<div class="card">
+  <h2>Volume</h2>
+  <div class="volume-wrap">
+    <input type="range" id="vol" min="0" max="100" value="50">
+    <span class="vol-label" id="vol-label">50%</span>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Bluetooth Devices</h2>
+  <div id="devices">Loading...</div>
+</div>
+
+<div class="card">
+  <h2>System</h2>
+  <div class="btn-row">
+    <button onclick="svcAction('raspotify','restart')">Restart Spotify</button>
+    <button onclick="svcAction('spotifoni-controls','restart')">Restart Controls</button>
+    <button class="btn-danger" onclick="if(confirm('Reboot?')) systemAction('reboot')">Reboot</button>
+    <button class="btn-danger" onclick="if(confirm('Shut down?')) systemAction('shutdown')">Shut Down</button>
+  </div>
+</div>
+
+<script>
+async function loadStatus() {
+  try {
+    const r = await fetch('/api/status');
+    const d = await r.json();
+    const el = document.getElementById('services');
+    el.innerHTML = Object.entries(d.services).map(([name, state]) =>
+      `<div class="svc-row"><span>${name}</span><span class="badge ${state === 'active' ? 'active' : 'inactive'}">${state}</span></div>`
+    ).join('');
+  } catch (e) { console.error(e); }
+}
+
+async function loadDevices() {
+  try {
+    const r = await fetch('/api/bluetooth/devices');
+    const d = await r.json();
+    const el = document.getElementById('devices');
+    el.textContent = d.devices.length
+      ? d.devices.map(d => `${d.name} (${d.mac})`).join(', ')
+      : 'No paired devices';
+  } catch (e) { document.getElementById('devices').textContent = 'Error loading'; }
+}
+
+const vol = document.getElementById('vol');
+const volLabel = document.getElementById('vol-label');
+let volTimer;
+vol.addEventListener('input', () => {
+  volLabel.textContent = vol.value + '%';
+  clearTimeout(volTimer);
+  volTimer = setTimeout(() => {
+    fetch('/api/volume', {method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({level: parseInt(vol.value)})});
+  }, 200);
+});
+
+async function svcAction(name, action) {
+  await fetch(`/api/service/${name}/${action}`, {method: 'POST'});
+  setTimeout(loadStatus, 1000);
+}
+async function systemAction(action) {
+  await fetch(`/api/system/${action}`, {method: 'POST'});
+}
+
+loadStatus();
+loadDevices();
+setInterval(loadStatus, 10000);
+</script>

@@ -1,0 +1,12 @@
+[Unit]
+Description=Spotifoni web configuration interface
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /opt/spotifoni/web/app.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
