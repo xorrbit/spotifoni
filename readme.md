@@ -10,7 +10,7 @@ Marconi 378 antique console radio converted into a Spotify Connect speaker and B
 - KY-040 rotary encoder (volume control, Phase 1; four encoders in Phase 2)
 - Status LEDs (Phase 2)
 
-See `spotifoni.md` for the full design document and [wiring.md](wiring.md) for the wiring diagrams.
+See [design.md](design.md) for the full design document and [wiring.md](wiring.md) for the wiring diagrams.
 
 ## Setup
 
