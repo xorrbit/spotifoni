@@ -23,7 +23,15 @@ Flash **Raspberry Pi OS Lite (64-bit, Bookworm)** to a microSD card using the Ra
 
 ### Provision
 
-Clone the repo onto the Pi and run the setup script:
+SSH into the Pi and update the system:
+
+```bash
+sudo apt update
+sudo apt upgrade -y
+sudo apt install -y git
+```
+
+Clone the repo and run the setup script:
 
 ```bash
 git clone https://github.com/xorrbit/spotifoni.git

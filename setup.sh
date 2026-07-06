@@ -63,7 +63,6 @@ if ! grep -q "dtoverlay=hifiberry-dac" "${BOOT_CONFIG}" 2>/dev/null; then
     {
         echo ""
         echo "# Spotifoni — I2S DAC (MAX98357A)"
-        echo "dtparam=audio=off"
         echo "dtoverlay=hifiberry-dac"
     } >> "${BOOT_CONFIG}"
     NEEDS_REBOOT=1

@@ -1,8 +1,5 @@
 # Lines to add to /boot/firmware/config.txt for Spotifoni
-# The hifiberry-dac overlay enables I2S output on GPIO 18/19/21
+# Keep onboard audio enabled so both outputs are available
 
-# Disable onboard audio (conflicts with I2S)
-dtparam=audio=off
-
-# Enable I2S DAC (MAX98357A)
+# Enable I2S DAC (MAX98357A) — coexists with onboard headphone jack
 dtoverlay=hifiberry-dac

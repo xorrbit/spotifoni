@@ -55,6 +55,9 @@
   .btn-danger { color: var(--err); border-color: var(--err); }
   .btn-danger:hover { background: var(--err); color: white; }
   #devices { font-size: 13px; color: var(--text-sec); }
+  .output-btns { display: flex; gap: 8px; }
+  .output-btns button { flex: 1; padding: 10px 8px; font-size: 12px; }
+  .output-btns button.selected { border-color: var(--accent); color: var(--accent); font-weight: 700; }
 </style>
 
 <span class="eyebrow">Spotifoni</span>
@@ -71,6 +74,11 @@
     <input type="range" id="vol" min="0" max="100" value="50">
     <span class="vol-label" id="vol-label">50%</span>
   </div>
+</div>
+
+<div class="card">
+  <h2>Audio Output</h2>
+  <div class="output-btns" id="audio-outputs">Loading...</div>
 </div>
 
 <div class="card">
@@ -131,7 +139,24 @@ async function systemAction(action) {
   await fetch(`/api/system/${action}`, {method: 'POST'});
 }
 
+async function loadAudioOutput() {
+  try {
+    const r = await fetch('/api/audio/output');
+    const d = await r.json();
+    const el = document.getElementById('audio-outputs');
+    el.innerHTML = Object.entries(d.outputs).map(([key, label]) =>
+      `<button class="${key === d.current ? 'selected' : ''}" onclick="setOutput('${key}')">${label}</button>`
+    ).join('');
+  } catch (e) { console.error(e); }
+}
+async function setOutput(key) {
+  await fetch('/api/audio/output', {method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({output: key})});
+  loadAudioOutput();
+}
+
 loadStatus();
 loadDevices();
+loadAudioOutput();
 setInterval(loadStatus, 10000);
 </script>
