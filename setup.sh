@@ -32,6 +32,9 @@ apt-get install -y -qq \
     avahi-daemon \
     git
 
+info "Installing WS2812B LED library"
+pip3 install --break-system-packages rpi-ws281x
+
 # ── Raspotify ────────────────────────────────────────────────────────────────
 
 if ! command -v raspotify &>/dev/null; then
@@ -68,6 +71,19 @@ if ! grep -q "dtoverlay=hifiberry-dac" "${BOOT_CONFIG}" 2>/dev/null; then
     NEEDS_REBOOT=1
 else
     info "I2S DAC overlay already configured"
+fi
+
+# SPI for WS2812B LED strip
+if ! grep -q "dtparam=spi=on" "${BOOT_CONFIG}" 2>/dev/null; then
+    info "Enabling SPI for WS2812B LEDs in ${BOOT_CONFIG}"
+    {
+        echo ""
+        echo "# Spotifoni — SPI for WS2812B LED strip"
+        echo "dtparam=spi=on"
+    } >> "${BOOT_CONFIG}"
+    NEEDS_REBOOT=1
+else
+    info "SPI already enabled"
 fi
 
 # ── Hostname ─────────────────────────────────────────────────────────────────

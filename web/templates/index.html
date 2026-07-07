@@ -58,6 +58,14 @@
   .output-btns { display: flex; gap: 8px; }
   .output-btns button { flex: 1; padding: 10px 8px; font-size: 12px; }
   .output-btns button.selected { border-color: var(--accent); color: var(--accent); font-weight: 700; }
+  .transport { display: flex; justify-content: center; gap: 12px; }
+  .transport button {
+    width: 48px; height: 48px; padding: 0; font-size: 20px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .transport .play-btn { width: 56px; height: 56px; font-size: 24px; border-color: var(--accent); }
+  .mute-btn { font-size: 12px; }
+  .mute-btn.muted { color: var(--err); border-color: var(--err); }
 </style>
 
 <span class="eyebrow">Spotifoni</span>
@@ -69,10 +77,20 @@
 </div>
 
 <div class="card">
+  <h2>Transport</h2>
+  <div class="transport">
+    <button onclick="transport('previous')">&#9198;</button>
+    <button class="play-btn" onclick="transport('play-pause')">&#9199;</button>
+    <button onclick="transport('next')">&#9197;</button>
+  </div>
+</div>
+
+<div class="card">
   <h2>Volume</h2>
   <div class="volume-wrap">
     <input type="range" id="vol" min="0" max="100" value="50">
     <span class="vol-label" id="vol-label">50%</span>
+    <button class="mute-btn" id="mute-btn" onclick="toggleMute()">MUTE</button>
   </div>
 </div>
 
@@ -131,6 +149,16 @@ vol.addEventListener('input', () => {
   }, 200);
 });
 
+async function transport(action) {
+  await fetch(`/api/transport/${action}`, {method: 'POST'});
+}
+async function toggleMute() {
+  try {
+    const r = await fetch('/api/volume/mute', {method: 'POST'});
+    const d = await r.json();
+    document.getElementById('mute-btn').classList.toggle('muted', d.muted);
+  } catch (e) { console.error(e); }
+}
 async function svcAction(name, action) {
   await fetch(`/api/service/${name}/${action}`, {method: 'POST'});
   setTimeout(loadStatus, 1000);

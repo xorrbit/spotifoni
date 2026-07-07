@@ -1,0 +1,309 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1060 670" font-family="ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace">
+  <style>
+    .pcb-pi { fill: #2A6344; }
+    .pcb-amp { fill: #5B3888; }
+    .pcb-enc { fill: #2B5580; }
+    .pcb-ls { fill: #7B5B3A; }
+    .pcb-ws { fill: #1A3A2A; }
+    .pcb-text { fill: #E2E0D8; }
+    .pcb-dim { fill: rgba(255,255,255,0.45); }
+    .wire-5v { stroke: #C83E34; }
+    .wire-gnd { stroke: #4A4A4A; }
+    .wire-i2s { stroke: #228075; }
+    .wire-3v3 { stroke: #C27028; }
+    .wire-gpio { stroke: #3A60A0; }
+    .wire-spk { stroke: #9A6228; }
+    .wire-led { stroke: #22A858; }
+    .dot-5v { fill: #E05A4F; }
+    .dot-gnd { fill: #666; }
+    .dot-i2s { fill: #2DA090; }
+    .dot-3v3 { fill: #E08838; }
+    .dot-gpio { fill: #5078C0; }
+    .dot-spk { fill: #B87333; }
+    .dot-led { fill: #2DB86B; }
+    .label { fill: #2A3038; font-size: 11px; }
+    .label-sec { fill: #6B7280; font-size: 9px; }
+    .spk-fill { fill: #EAE4D7; }
+    .spk-cone { stroke: #6B7280; fill: none; }
+    .spk-cap { fill: #6B7280; }
+    .comp-fill { fill: #EAE4D7; stroke: #D1C9B5; }
+    text { font-family: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace; }
+  </style>
+
+  <!-- Background -->
+  <rect width="1060" height="670" fill="#F3EEE4" rx="10"/>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- RASPBERRY PI 3B                                            -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <rect x="25" y="18" width="258" height="480" rx="10" class="pcb-pi"/>
+  <text x="154" y="48" text-anchor="middle" class="pcb-text" font-size="13" font-weight="700">RASPBERRY PI 3B</text>
+  <text x="154" y="65" text-anchor="middle" class="pcb-dim" font-size="10">Model B V1.2</text>
+
+  <!-- I2S section -->
+  <text x="45" y="95" class="pcb-dim" font-size="9" font-weight="700">I²S AUDIO</text>
+  <text x="270" y="118" text-anchor="end" class="pcb-text" font-size="10">Pin 2 · 5V</text>
+  <text x="270" y="147" text-anchor="end" class="pcb-text" font-size="10">Pin 6 · GND</text>
+  <text x="270" y="176" text-anchor="end" class="pcb-text" font-size="10">Pin 12 · GPIO18</text>
+  <text x="270" y="205" text-anchor="end" class="pcb-text" font-size="10">Pin 35 · GPIO19</text>
+  <text x="270" y="234" text-anchor="end" class="pcb-text" font-size="10">Pin 40 · GPIO21</text>
+
+  <!-- Divider -->
+  <line x1="41" y1="258" x2="267" y2="258" stroke="rgba(255,255,255,0.18)" stroke-width="1" stroke-dasharray="4 4"/>
+
+  <!-- SPI / LED section -->
+  <text x="45" y="283" class="pcb-dim" font-size="9" font-weight="700">SPI / LED DATA</text>
+  <text x="270" y="310" text-anchor="end" class="pcb-text" font-size="10">Pin 19 · GPIO10</text>
+  <text x="270" y="340" text-anchor="end" class="pcb-text" font-size="10">Pin 4 · 5V</text>
+  <text x="270" y="370" text-anchor="end" class="pcb-text" font-size="10">Pin 14 · GND</text>
+
+  <!-- Divider -->
+  <line x1="41" y1="398" x2="267" y2="398" stroke="rgba(255,255,255,0.18)" stroke-width="1" stroke-dasharray="4 4"/>
+
+  <!-- Encoder section (summary) -->
+  <text x="45" y="423" class="pcb-dim" font-size="9" font-weight="700">ENCODERS</text>
+  <text x="154" y="448" text-anchor="middle" class="pcb-dim" font-size="9">4× KY-040 · 3.3V + GND + 12 GPIO</text>
+  <text x="154" y="465" text-anchor="middle" class="pcb-dim" font-size="9">See encoder reference below</text>
+
+  <!-- Pi bottom notes -->
+  <text x="154" y="488" text-anchor="middle" class="pcb-dim" font-size="9">22 of 26 GPIO allocated · 4 free</text>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- MAX98357A AMP                                              -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <rect x="540" y="55" width="180" height="210" rx="10" class="pcb-amp"/>
+  <text x="630" y="79" text-anchor="middle" class="pcb-text" font-size="12" font-weight="700">MAX98357A</text>
+  <text x="630" y="96" text-anchor="middle" class="pcb-dim" font-size="10">I²S Mono Amp</text>
+
+  <text x="553" y="118" class="pcb-text" font-size="10">VIN</text>
+  <text x="553" y="147" class="pcb-text" font-size="10">GND</text>
+  <text x="553" y="176" class="pcb-text" font-size="10">BCLK</text>
+  <text x="553" y="205" class="pcb-text" font-size="10">LRCLK</text>
+  <text x="553" y="234" class="pcb-text" font-size="10">DIN</text>
+
+  <line x1="554" y1="245" x2="706" y2="245" stroke="rgba(255,255,255,0.15)" stroke-width="1" stroke-dasharray="3 3"/>
+  <text x="707" y="257" text-anchor="end" class="pcb-text" font-size="10">SPK+</text>
+  <text x="707" y="257" text-anchor="end" class="pcb-text" font-size="10">SPK+</text>
+  <text x="630" y="260" text-anchor="middle" class="pcb-dim" font-size="9">3.2W @ 4Ω</text>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- SPEAKER                                                    -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <circle cx="848" cy="168" r="48" class="spk-fill" stroke="#D1C9B5" stroke-width="2"/>
+  <circle cx="848" cy="168" r="41" class="spk-cone" stroke-width="0.8"/>
+  <circle cx="848" cy="168" r="30" class="spk-cone" stroke-width="1"/>
+  <circle cx="848" cy="168" r="9" class="spk-cap"/>
+  <text x="848" y="232" text-anchor="middle" class="label" font-size="11" font-weight="700">VISATON</text>
+  <text x="848" y="246" text-anchor="middle" class="label-sec">FR 10 HM · 4Ω</text>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- 74AHCT125 LEVEL SHIFTER                                    -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <rect x="400" y="282" width="150" height="108" rx="6" class="pcb-ls"/>
+  <text x="475" y="308" text-anchor="middle" class="pcb-text" font-size="11" font-weight="700">74AHCT125</text>
+  <text x="475" y="322" text-anchor="middle" class="pcb-dim" font-size="9">Level Shifter</text>
+
+  <!-- LS pin labels -->
+  <text x="408" y="342" class="pcb-text" font-size="9">1A →</text>
+  <text x="408" y="370" class="pcb-text" font-size="9">1OE</text>
+  <text x="542" y="342" text-anchor="end" class="pcb-text" font-size="9">→ 1Y</text>
+  <text x="475" y="296" text-anchor="middle" class="pcb-dim" font-size="8">VCC (5V)</text>
+  <text x="475" y="387" text-anchor="middle" class="pcb-dim" font-size="8">GND</text>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- 470Ω RESISTOR                                              -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <rect x="580" y="331" width="48" height="14" rx="3" class="comp-fill" stroke-width="1.5"/>
+  <text x="604" y="341" text-anchor="middle" fill="#6B7280" font-size="8" font-weight="600">470Ω</text>
+  <text x="604" y="358" text-anchor="middle" class="label-sec">resistor</text>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- 1000µF CAPACITOR (bypass, between 5V and GND buses)        -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- Cap plates (horizontal lines) -->
+  <line x1="652" y1="348" x2="672" y2="348" stroke="#888" stroke-width="2.5"/>
+  <line x1="652" y1="362" x2="672" y2="362" stroke="#888" stroke-width="2.5"/>
+  <!-- Cap vertical wires -->
+  <line x1="662" y1="340" x2="662" y2="348" stroke="#888" stroke-width="1.5"/>
+  <line x1="662" y1="362" x2="662" y2="370" stroke="#888" stroke-width="1.5"/>
+  <!-- Cap label -->
+  <text x="662" y="384" text-anchor="middle" class="label-sec">1000µF</text>
+  <text x="674" y="353" fill="#888" font-size="8" font-weight="700">+</text>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- WS2812B LED STRIP                                          -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <rect x="700" y="282" width="180" height="108" rx="6" class="pcb-ws"/>
+  <text x="790" y="326" text-anchor="middle" class="pcb-text" font-size="11" font-weight="700">WS2812B</text>
+  <text x="790" y="340" text-anchor="middle" class="pcb-dim" font-size="9">8× RGB LED Stick</text>
+
+  <!-- 8 LED dots -->
+  <circle cx="718" cy="300" r="6" fill="#FF6B35" opacity="0.9"/>
+  <circle cx="738" cy="300" r="6" fill="#FF8C42" opacity="0.9"/>
+  <circle cx="758" cy="300" r="6" fill="#FFB347" opacity="0.9"/>
+  <circle cx="778" cy="300" r="6" fill="#FFD700" opacity="0.9"/>
+  <circle cx="798" cy="300" r="6" fill="#FFEA70" opacity="0.9"/>
+  <circle cx="818" cy="300" r="6" fill="#FFE4B5" opacity="0.9"/>
+  <circle cx="838" cy="300" r="6" fill="#FFF5BA" opacity="0.9"/>
+  <circle cx="858" cy="300" r="6" fill="#FFFAF0" opacity="0.9"/>
+
+  <!-- WS2812 pin labels -->
+  <text x="708" y="358" class="pcb-text" font-size="9">DIN</text>
+  <text x="708" y="373" class="pcb-text" font-size="9">5V</text>
+  <text x="708" y="386" class="pcb-text" font-size="9">GND</text>
+  <text x="872" y="358" text-anchor="end" class="pcb-text" font-size="9">DOUT →</text>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- I2S WIRES (Pi → Amp)                                       -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <line x1="283" y1="114" x2="540" y2="114" stroke-width="3" stroke-linecap="round" class="wire-5v"/>
+  <line x1="283" y1="143" x2="540" y2="143" stroke-width="3" stroke-linecap="round" class="wire-gnd"/>
+  <line x1="283" y1="172" x2="540" y2="172" stroke-width="3" stroke-linecap="round" class="wire-i2s"/>
+  <line x1="283" y1="201" x2="540" y2="201" stroke-width="3" stroke-linecap="round" class="wire-i2s"/>
+  <line x1="283" y1="230" x2="540" y2="230" stroke-width="3" stroke-linecap="round" class="wire-i2s"/>
+
+  <!-- I2S dots (Pi side) -->
+  <circle cx="283" cy="114" r="5" class="dot-5v"/>
+  <circle cx="283" cy="143" r="5" class="dot-gnd"/>
+  <circle cx="283" cy="172" r="5" class="dot-i2s"/>
+  <circle cx="283" cy="201" r="5" class="dot-i2s"/>
+  <circle cx="283" cy="230" r="5" class="dot-i2s"/>
+
+  <!-- I2S dots (Amp side) -->
+  <circle cx="540" cy="114" r="5" class="dot-5v"/>
+  <circle cx="540" cy="143" r="5" class="dot-gnd"/>
+  <circle cx="540" cy="172" r="5" class="dot-i2s"/>
+  <circle cx="540" cy="201" r="5" class="dot-i2s"/>
+  <circle cx="540" cy="230" r="5" class="dot-i2s"/>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- SPEAKER WIRES (Amp → Speaker)                              -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <line x1="720" y1="253" x2="802" y2="150" stroke-width="3" stroke-linecap="round" class="wire-spk"/>
+  <line x1="720" y1="260" x2="802" y2="186" stroke-width="3" stroke-linecap="round" class="wire-spk"/>
+  <circle cx="720" cy="253" r="5" class="dot-spk"/>
+  <circle cx="720" cy="260" r="5" class="dot-spk"/>
+  <circle cx="802" cy="150" r="5" class="dot-spk"/>
+  <circle cx="802" cy="186" r="5" class="dot-spk"/>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- LED DATA WIRE (Pi → Level Shifter → Resistor → WS2812)    -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- Pi GPIO10 to Level Shifter 1A -->
+  <line x1="283" y1="306" x2="400" y2="338" stroke-width="3" stroke-linecap="round" class="wire-led"/>
+  <circle cx="283" cy="306" r="5" class="dot-led"/>
+  <circle cx="400" cy="338" r="5" class="dot-led"/>
+
+  <!-- Level Shifter 1Y to Resistor -->
+  <line x1="550" y1="338" x2="580" y2="338" stroke-width="3" stroke-linecap="round" class="wire-led"/>
+  <circle cx="550" cy="338" r="5" class="dot-led"/>
+  <circle cx="580" cy="338" r="5" class="dot-led"/>
+
+  <!-- Resistor to WS2812 DIN -->
+  <line x1="628" y1="338" x2="700" y2="354" stroke-width="3" stroke-linecap="round" class="wire-led"/>
+  <circle cx="628" cy="338" r="5" class="dot-led"/>
+  <circle cx="700" cy="354" r="5" class="dot-led"/>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- 5V WIRE (Pi → Level Shifter VCC → Cap → WS2812 5V)        -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- Pi 5V to junction -->
+  <line x1="283" y1="336" x2="475" y2="336" stroke-width="3" stroke-linecap="round" class="wire-5v"/>
+  <circle cx="283" cy="336" r="5" class="dot-5v"/>
+  <!-- Junction dot -->
+  <circle cx="475" cy="336" r="5" class="dot-5v"/>
+  <!-- Drop up to LS VCC -->
+  <line x1="475" y1="336" x2="475" y2="282" stroke-width="3" stroke-linecap="round" class="wire-5v"/>
+  <circle cx="475" cy="282" r="5" class="dot-5v"/>
+  <!-- Continue right to cap top -->
+  <line x1="475" y1="340" x2="662" y2="340" stroke-width="2" stroke-linecap="round" class="wire-5v"/>
+  <!-- Cap top to WS2812 5V -->
+  <line x1="662" y1="340" x2="700" y2="369" stroke-width="3" stroke-linecap="round" class="wire-5v"/>
+  <circle cx="700" cy="369" r="5" class="dot-5v"/>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- GND WIRE (Pi → LS GND, 1OE → Cap → WS2812 GND)           -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- Pi GND to junction -->
+  <line x1="283" y1="366" x2="460" y2="366" stroke-width="3" stroke-linecap="round" class="wire-gnd"/>
+  <circle cx="283" cy="366" r="5" class="dot-gnd"/>
+  <!-- Junction dot -->
+  <circle cx="460" cy="366" r="5" class="dot-gnd"/>
+  <!-- Drop to LS 1OE -->
+  <line x1="415" y1="366" x2="400" y2="366" stroke-width="3" stroke-linecap="round" class="wire-gnd"/>
+  <circle cx="400" cy="366" r="5" class="dot-gnd"/>
+  <!-- Drop down to LS GND -->
+  <line x1="475" y1="366" x2="475" y2="390" stroke-width="3" stroke-linecap="round" class="wire-gnd"/>
+  <circle cx="475" cy="390" r="5" class="dot-gnd"/>
+  <!-- Continue right to cap bottom -->
+  <line x1="460" y1="370" x2="662" y2="370" stroke-width="2" stroke-linecap="round" class="wire-gnd"/>
+  <!-- Cap bottom to WS2812 GND -->
+  <line x1="662" y1="370" x2="700" y2="382" stroke-width="3" stroke-linecap="round" class="wire-gnd"/>
+  <circle cx="700" cy="382" r="5" class="dot-gnd"/>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- ENCODER SECTION CONNECTOR (Pi → Encoder reference)         -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- Dashed connector line from Pi encoder section to reference -->
+  <line x1="154" y1="498" x2="154" y2="525" stroke="#6B7280" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <line x1="154" y1="525" x2="580" y2="525" stroke="#6B7280" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <!-- Small arrows at each encoder box -->
+  <line x1="230" y1="525" x2="230" y2="540" stroke="#6B7280" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <line x1="404" y1="525" x2="404" y2="540" stroke="#6B7280" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <line x1="578" y1="525" x2="578" y2="540" stroke="#6B7280" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <line x1="752" y1="525" x2="752" y2="540" stroke="#6B7280" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <line x1="580" y1="525" x2="752" y2="525" stroke="#6B7280" stroke-width="1.5" stroke-dasharray="4 3"/>
+
+  <!-- Power bus label on connector -->
+  <text x="370" y="519" text-anchor="middle" fill="#6B7280" font-size="8" font-weight="600">3.3V + GND + 12× GPIO</text>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- ENCODER REFERENCE BOXES                                    -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+
+  <!-- Encoder 1 — Volume -->
+  <rect x="156" y="540" width="148" height="88" rx="6" class="pcb-enc"/>
+  <text x="230" y="560" text-anchor="middle" class="pcb-text" font-size="10" font-weight="700">Volume</text>
+  <text x="164" y="578" class="pcb-dim" font-size="9">CLK  GPIO 17 · Pin 11</text>
+  <text x="164" y="593" class="pcb-dim" font-size="9">DT   GPIO 27 · Pin 13</text>
+  <text x="164" y="608" class="pcb-dim" font-size="9">SW   GPIO 22 · Pin 15</text>
+
+  <!-- Encoder 2 — Previous -->
+  <rect x="330" y="540" width="148" height="88" rx="6" class="pcb-enc"/>
+  <text x="404" y="560" text-anchor="middle" class="pcb-text" font-size="10" font-weight="700">Previous</text>
+  <text x="338" y="578" class="pcb-dim" font-size="9">CLK  GPIO 5  · Pin 29</text>
+  <text x="338" y="593" class="pcb-dim" font-size="9">DT   GPIO 6  · Pin 31</text>
+  <text x="338" y="608" class="pcb-dim" font-size="9">SW   GPIO 13 · Pin 33</text>
+
+  <!-- Encoder 3 — Play/Pause -->
+  <rect x="504" y="540" width="148" height="88" rx="6" class="pcb-enc"/>
+  <text x="578" y="560" text-anchor="middle" class="pcb-text" font-size="10" font-weight="700">Play/Pause</text>
+  <text x="512" y="578" class="pcb-dim" font-size="9">CLK  GPIO 23 · Pin 16</text>
+  <text x="512" y="593" class="pcb-dim" font-size="9">DT   GPIO 24 · Pin 18</text>
+  <text x="512" y="608" class="pcb-dim" font-size="9">SW   GPIO 25 · Pin 22</text>
+
+  <!-- Encoder 4 — Next -->
+  <rect x="678" y="540" width="148" height="88" rx="6" class="pcb-enc"/>
+  <text x="752" y="560" text-anchor="middle" class="pcb-text" font-size="10" font-weight="700">Next</text>
+  <text x="686" y="578" class="pcb-dim" font-size="9">CLK  GPIO 12 · Pin 32</text>
+  <text x="686" y="593" class="pcb-dim" font-size="9">DT   GPIO 16 · Pin 36</text>
+  <text x="686" y="608" class="pcb-dim" font-size="9">SW   GPIO 26 · Pin 37</text>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- LEGEND                                                     -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <rect x="25" y="646" width="22" height="4" rx="2" fill="#C83E34"/>
+  <text x="52" y="650" class="label-sec">5V Power</text>
+  <rect x="115" y="646" width="22" height="4" rx="2" fill="#C27028"/>
+  <text x="142" y="650" class="label-sec">3.3V Power</text>
+  <rect x="210" y="646" width="22" height="4" rx="2" fill="#4A4A4A"/>
+  <text x="237" y="650" class="label-sec">Ground</text>
+  <rect x="295" y="646" width="22" height="4" rx="2" fill="#228075"/>
+  <text x="322" y="650" class="label-sec">I²S Signal</text>
+  <rect x="390" y="646" width="22" height="4" rx="2" fill="#22A858"/>
+  <text x="417" y="650" class="label-sec">LED Data</text>
+  <rect x="480" y="646" width="22" height="4" rx="2" fill="#3A60A0"/>
+  <text x="507" y="650" class="label-sec">Encoder GPIO</text>
+  <rect x="595" y="646" width="22" height="4" rx="2" fill="#9A6228"/>
+  <text x="622" y="650" class="label-sec">Speaker</text>
+</svg>

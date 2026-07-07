@@ -3,3 +3,6 @@
 
 # Enable I2S DAC (MAX98357A) — coexists with onboard headphone jack
 dtoverlay=hifiberry-dac
+
+# Enable SPI for WS2812B LED strip
+dtparam=spi=on

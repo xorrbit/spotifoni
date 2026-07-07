@@ -7,8 +7,9 @@ Marconi 378 antique console radio converted into a Spotify Connect speaker and B
 - Raspberry Pi 3 Model B V1.2
 - MAX98357A I2S mono amplifier
 - Visaton FR 10 HM 4Ω full-range speaker
-- KY-040 rotary encoder (volume control, Phase 1; four encoders in Phase 2)
-- Status LEDs (Phase 2)
+- 4× KY-040 rotary encoders (volume, previous, play/pause, next)
+- WS2812B RGB LED sticks (8 LEDs each, behind tuner window)
+- 74AHCT125 level shifter for LED data signal
 
 See [design.md](design.md) for the full design document and [wiring.md](wiring.md) for the wiring diagrams.
 
@@ -67,7 +68,9 @@ This rsyncs the GPIO daemon and web app to the Pi and restarts both services.
 | Web UI | `http://spotifoni.local/` — service status, volume, Bluetooth devices, system controls |
 | SSH | `ssh pi@spotifoni.local` |
 
-### Physical Controls (Phase 1)
+### Physical Controls
 
-- **Volume dial** — rotate to adjust volume
-- **Volume dial press** — toggle play/pause
+- **Volume dial** — rotate to adjust volume, press to toggle mute
+- **Previous dial** — press for previous track
+- **Play/Pause dial** — press to toggle playback
+- **Next dial** — press for next track

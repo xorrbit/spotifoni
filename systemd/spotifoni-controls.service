@@ -4,6 +4,7 @@ After=multi-user.target sound.target
 
 [Service]
 Type=simple
+WorkingDirectory=/opt/spotifoni/gpio-daemon
 ExecStart=/usr/bin/python3 /opt/spotifoni/gpio-daemon/spotifoni-controls.py
 Restart=on-failure
 RestartSec=5

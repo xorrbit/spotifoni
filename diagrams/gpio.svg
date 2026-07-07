@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 520" font-family="ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 460" font-family="ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace">
   <style>
     text { font-family: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace; }
     .hdr { fill: #6B7280; font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; }
@@ -10,18 +10,18 @@
     .border { stroke: #D1C9B5; }
     .stripe { fill: #EAE4D7; }
     .cat-enc { fill: #2B5580; }
-    .cat-led { fill: #2A6344; }
+    .cat-ws { fill: #B87333; }
     .cat-bus { fill: #5B3888; }
     .cat-dot { r: 4; }
   </style>
 
   <!-- Background -->
-  <rect width="720" height="520" fill="#F3EEE4" rx="10"/>
+  <rect width="720" height="460" fill="#F3EEE4" rx="10"/>
 
   <!-- Title -->
   <text x="24" y="28" class="accent" font-size="11" font-weight="600" letter-spacing="0.15em">SPOTIFONI</text>
-  <text x="24" y="50" fill="#2A3038" font-size="18" font-weight="350">Phase 2 — Full GPIO Allocation</text>
-  <text x="24" y="68" fill="#6B7280" font-size="11">All four encoders + status LEDs. Encoder 1 assignments carry over from Phase 1 unchanged.</text>
+  <text x="24" y="50" fill="#2A3038" font-size="18" font-weight="350">GPIO Allocation</text>
+  <text x="24" y="68" fill="#6B7280" font-size="11">Four encoders, WS2812B LED display via SPI, and I²S audio.</text>
 
   <!-- Table header -->
   <line x1="24" y1="95" x2="696" y2="95" class="border" stroke-width="1"/>
@@ -29,15 +29,12 @@
   <text x="320" y="90" class="hdr">GPIO Pins</text>
   <text x="540" y="90" class="hdr">Header Pins</text>
 
-  <!-- Row stripes -->
+  <!-- Row stripes (every other row) -->
   <rect x="24" y="99" width="672" height="32" class="stripe" rx="0"/>
   <rect x="24" y="163" width="672" height="32" class="stripe" rx="0"/>
   <rect x="24" y="227" width="672" height="32" class="stripe" rx="0"/>
   <rect x="24" y="291" width="672" height="32" class="stripe" rx="0"/>
-  <rect x="24" y="355" width="672" height="32" class="stripe" rx="0"/>
-  <rect x="24" y="419" width="672" height="32" class="stripe" rx="0"/>
 
-  <!-- Encoders section -->
   <!-- Row 1: Encoder 1 — Volume -->
   <circle cx="32" cy="117" class="cat-enc cat-dot"/>
   <text x="40" y="120" class="row-text">Encoder 1 — Volume</text>
@@ -66,51 +63,35 @@
   <text x="540" y="216" class="row-mono">Pin 32, 36, 37</text>
   <line x1="24" y1="227" x2="696" y2="227" class="border" stroke-width="0.5"/>
 
-  <!-- LEDs section -->
-  <!-- Row 5: Power LED -->
-  <circle cx="32" cy="245" class="cat-led cat-dot"/>
-  <text x="40" y="248" class="row-text">Power LED (amber)</text>
-  <text x="320" y="248" class="row-mono">GPIO 4</text>
-  <text x="540" y="248" class="row-mono">Pin 7</text>
+  <!-- Row 5: WS2812 LED data -->
+  <circle cx="32" cy="245" class="cat-ws cat-dot"/>
+  <text x="40" y="248" class="row-text">WS2812 LED data (SPI0 MOSI)</text>
+  <text x="320" y="248" class="row-mono">GPIO 10</text>
+  <text x="540" y="248" class="row-mono">Pin 19</text>
   <line x1="24" y1="259" x2="696" y2="259" class="border" stroke-width="0.5"/>
 
-  <!-- Row 6: Bluetooth LED -->
-  <circle cx="32" cy="277" class="cat-led cat-dot"/>
-  <text x="40" y="280" class="row-text">Bluetooth LED (blue)</text>
-  <text x="320" y="280" class="row-mono">GPIO 20</text>
-  <text x="540" y="280" class="row-mono">Pin 38</text>
+  <!-- Row 6: SPI0 reserved -->
+  <circle cx="32" cy="277" class="cat-ws cat-dot"/>
+  <text x="40" y="280" class="row-dim">SPI0 (reserved by driver)</text>
+  <text x="320" y="280" class="row-mono">GPIO 7, 8, 9, 11</text>
+  <text x="540" y="280" class="row-mono">Pin 26, 24, 21, 23</text>
   <line x1="24" y1="291" x2="696" y2="291" class="border" stroke-width="0.5"/>
 
-  <!-- Row 7: Spotify LED -->
-  <circle cx="32" cy="309" class="cat-led cat-dot"/>
-  <text x="40" y="312" class="row-text">Spotify LED (green)</text>
-  <text x="320" y="312" class="row-mono">GPIO 10</text>
-  <text x="540" y="312" class="row-mono">Pin 19</text>
-  <line x1="24" y1="323" x2="696" y2="323" class="border" stroke-width="0.5"/>
-
-  <!-- Buses section -->
-  <!-- Row 8: I2S -->
-  <circle cx="32" cy="341" class="cat-bus cat-dot"/>
-  <text x="40" y="344" class="row-dim">I²S bus (allocated)</text>
-  <text x="320" y="344" class="row-mono">GPIO 18, 19, 21</text>
-  <text x="540" y="344" class="row-mono">Pin 12, 35, 40</text>
-  <line x1="24" y1="355" x2="696" y2="355" class="border" stroke-width="0.5"/>
-
-  <!-- Row 9: I2C -->
-  <circle cx="32" cy="373" class="cat-bus cat-dot"/>
-  <text x="40" y="376" class="row-dim">I²C for OLED (reserved)</text>
-  <text x="320" y="376" class="row-mono">GPIO 2, 3</text>
-  <text x="540" y="376" class="row-mono">Pin 3, 5</text>
+  <!-- Row 7: I2S bus -->
+  <circle cx="32" cy="309" class="cat-bus cat-dot"/>
+  <text x="40" y="312" class="row-dim">I²S bus (allocated)</text>
+  <text x="320" y="312" class="row-mono">GPIO 18, 19, 21</text>
+  <text x="540" y="312" class="row-mono">Pin 12, 35, 40</text>
 
   <!-- Legend -->
-  <line x1="24" y1="410" x2="696" y2="410" class="border" stroke-width="1"/>
-  <circle cx="40" cy="432" r="4" class="cat-enc"/>
-  <text x="50" y="435" class="row-mono">Encoders (3 pins each: CLK, DT, SW)</text>
-  <circle cx="40" cy="454" r="4" class="cat-led"/>
-  <text x="50" y="457" class="row-mono">Status LEDs (1 pin each + 330Ω resistor)</text>
-  <circle cx="40" cy="476" r="4" class="cat-bus"/>
-  <text x="50" y="479" class="row-mono">Communication buses</text>
+  <line x1="24" y1="348" x2="696" y2="348" class="border" stroke-width="1"/>
+  <circle cx="40" cy="370" r="4" class="cat-enc"/>
+  <text x="50" y="373" class="row-mono">Encoders (3 pins each: CLK, DT, SW)</text>
+  <circle cx="40" cy="392" r="4" class="cat-ws"/>
+  <text x="50" y="395" class="row-mono">WS2812 Display (SPI MOSI data + 4 reserved by driver)</text>
+  <circle cx="40" cy="414" r="4" class="cat-bus"/>
+  <text x="50" y="417" class="row-mono">I²S audio bus</text>
 
   <!-- Pin count summary -->
-  <text x="24" y="508" fill="#6B7280" font-size="11">Total: 22 of 26 usable GPIO pins allocated — 4 remaining (GPIO 0, 1, 7, 8)</text>
+  <text x="24" y="446" fill="#6B7280" font-size="11">Total: 20 of 26 usable GPIO pins allocated — 6 remaining (GPIO 0, 1, 2, 3, 4, 20)</text>
 </svg>

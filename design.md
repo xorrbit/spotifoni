@@ -2,7 +2,7 @@
 
 ## Project Summary
 
-Convert a Marconi 378 antique console radio into a modern streaming audio device while preserving the original exterior appearance. The unit will support Spotify Connect (appearing as a castable speaker in the Spotify app) and function as a Bluetooth speaker for any paired phone. The four original dials will be retrofitted with rotary encoders to provide physical controls for volume, transport, and power. Configuration will happen through a local web interface. The architecture leaves a clear upgrade path toward fully standalone Spotify playback in the future.
+Convert a Marconi 378 antique console radio into a modern streaming audio device while preserving the original exterior appearance. The unit will support Spotify Connect (appearing as a castable speaker in the Spotify app) and function as a Bluetooth speaker for any paired phone. The four original dials will be retrofitted with rotary encoders to provide physical controls for volume, transport, and power. Configuration will happen through a local web interface.
 
 
 ## Design Philosophy
@@ -14,9 +14,9 @@ The guiding principle is "invisible modernity." From the outside, this should lo
 
 ### Computing Platform — Raspberry Pi 3 Model B V1.2
 
-The brain of the system is an existing Raspberry Pi 3 Model B V1.2. It has a quad-core Cortex-A53 at 1.2 GHz, 1 GB of RAM, 2.4 GHz WiFi, and Bluetooth Classic 4.1 with A2DP support — all built in. The 40-pin GPIO header provides I2S audio output, I2C for a future OLED display, and enough GPIO pins for four rotary encoders plus status LEDs. The board runs headless Raspberry Pi OS Lite with no issues.
+The brain of the system is an existing Raspberry Pi 3 Model B V1.2. It has a quad-core Cortex-A53 at 1.2 GHz, 1 GB of RAM, 2.4 GHz WiFi, and Bluetooth Classic 4.1 with A2DP support — all built in. The 40-pin GPIO header provides I2S audio output and enough GPIO pins for four rotary encoders and the WS2812 LED display. The board runs headless Raspberry Pi OS Lite with no issues.
 
-1 GB of RAM is more than enough for the initial Spotify Connect + Bluetooth scope, and is also sufficient for the future standalone Spotify upgrade (spotifyd + Spotify Web API control layer + OLED UI). Only a heavier approach like running a full desktop browser in kiosk mode would strain it, and that's unlikely to be needed.
+1 GB of RAM is more than enough for the Spotify Connect + Bluetooth workload. Only a heavier approach like running a full desktop browser in kiosk mode would strain it, and that's unlikely to be needed.
 
 The board is credit-card sized (85×56 mm), which is larger than a Pi Zero but trivially small relative to the Marconi 378's console cabinet. It draws roughly 1.5–2.5W under typical load. A passive heatsink is a good idea inside the enclosed cabinet but active cooling is not needed at these workloads.
 
@@ -36,7 +36,7 @@ The Visaton FR 10 HM is a 4-inch (10 cm) full-range driver, 4Ω impedance, rated
 
 The Marconi 378's original speaker opening is significantly larger than 4 inches. An adapter ring (flat plywood, MDF, or 3D-printed ring) with the large outer diameter matching the cabinet's existing mounting holes and a smaller inner cutout for the FR 10 HM will be fabricated. Painted black, it disappears behind the grille cloth.
 
-The original field-coil speaker will be preserved and stored in case of future restoration.
+The original field-coil speaker will be preserved and stored.
 
 
 ### Controls — KY-040 Rotary Encoders
@@ -51,18 +51,22 @@ Dial 1 (Volume): Rotate for volume up/down. Press to toggle mute or power standb
 
 Dial 2 (Previous): Press to go to the previous track. Rotation can be mapped to seeking backward within a track, or left unmapped initially.
 
-Dial 3 (Play/Pause): Press to toggle playback. Rotation can be mapped to switching between Spotify and Bluetooth input sources in the future.
+Dial 3 (Play/Pause): Press to toggle playback. Rotation can be mapped to switching between Spotify and Bluetooth input sources, or left unmapped initially.
 
-Dial 4 (Next): Press to skip to the next track. Rotation can be mapped to seeking forward, or to playlist scrolling once the standalone upgrade is implemented.
+Dial 4 (Next): Press to skip to the next track. Rotation can be mapped to seeking forward, or left unmapped initially.
 
-Each encoder uses 3 GPIO pins (A, B, and switch), so four encoders need 12 GPIO pins. The Pi 3B has 26 usable GPIO pins, leaving plenty of room for the I2S bus (3 pins), I2C for a future OLED (2 pins), and several status LEDs.
+Each encoder uses 3 GPIO pins (A, B, and switch), so four encoders need 12 GPIO pins. The Pi 3B has 26 usable GPIO pins, leaving room for the I2S bus (3 pins) and SPI for the WS2812 display (5 pins, of which only MOSI is wired).
 
 
-### Status Display
+### Status Display — WS2812B RGB LED Sticks
 
-For the initial build, a few simple LEDs tucked behind the tuner window or dial openings: a warm amber LED for power-on (mimicking a tube warmup glow), a blue LED for active Bluetooth connection, and a green LED for Spotify active/playing. Each needs one GPIO pin and one 330Ω resistor.
+The tuner window is fitted with WS2812B 5050 RGB LED sticks (8 addressable LEDs per stick, chainable). These replace the original plan for individual status LEDs and provide a far more expressive display — color, brightness, and animation can all be controlled per-pixel from software.
 
-For the future upgrade, a small SSD1306 OLED (128×32 or 128×64 pixels) connects over I2C (two GPIO pins: SDA and SCL). It can display track name, artist, volume level, and input source, and fits behind the tuner dial window. Wire the I2C bus to a header or connector now so the OLED can be dropped in later without reopening the build.
+The WS2812B protocol requires a single data line with precise timing. The Pi's SPI0 MOSI (GPIO 10) drives the data through a 74AHCT125 level shifter, which converts the Pi's 3.3V output to the 5V logic the LEDs expect. A 470Ω resistor on the data line between the level shifter output and the first LED's DIN pin prevents signal reflections. A 1000µF electrolytic capacitor across the LED power input absorbs inrush current when the LEDs switch on.
+
+The LED sticks are powered from the same 5V rail as the rest of the system, via a separate power wire run (not through the Pi's GPIO header). At full white, 8 LEDs draw approximately 480mA; in practice, the display will run at reduced brightness and rarely approach this. The Mean Well IRM-15-5 PSU has sufficient headroom. For larger chains, a dedicated 5V supply is recommended.
+
+The `rpi_ws281x` Python library drives the LEDs via the SPI backend. SPI0 is enabled in `/boot/firmware/config.txt`. The SPI driver claims GPIO 7, 8, 9, 10, and 11; only GPIO 10 (MOSI) is wired.
 
 
 ### Power Supply
@@ -86,7 +90,7 @@ Flash Raspberry Pi OS Lite (64-bit) to a microSD card using the Raspberry Pi Ima
 
 The `raspotify` package wraps librespot (an open-source Spotify Connect client written in Rust) into a Debian package with a systemd service. Install it, configure the audio backend to use the I2S DAC via ALSA, and it just works. The radio will appear as a named device (e.g., "Marconi 378") in the Spotify app on any phone or computer on the same network. Configuration lives in `/etc/raspotify/conf` — device name, audio backend, bitrate (320 kbps for premium accounts), initial volume, and normalization settings.
 
-Raspotify also exposes playback events (track change, play, pause, volume change) that the control daemon can subscribe to for updating LEDs or a future OLED.
+Raspotify also exposes playback events (track change, play, pause, volume change) that the control daemon can subscribe to for updating the LED display.
 
 ### Bluetooth A2DP Sink
 
@@ -98,17 +102,17 @@ Auto-pairing with a trusted device list means pairing a phone once, and it recon
 
 ### GPIO Control Daemon
 
-A small Python service using `gpiozero` or `RPi.GPIO` (or `libgpiod` via the Python `gpiod` package for portability if the board is ever swapped). The daemon:
+A small Python service using `gpiozero`. The daemon:
 
-Reads the four rotary encoders and their push buttons via interrupts (not polling — important for responsiveness and low CPU usage). Translates encoder rotation into volume commands via `amixer` or PipeWire's `wpctl` for the volume dial. Translates button presses into MPRIS2 D-Bus commands for play/pause/next/previous — MPRIS2 is the standard Linux media player interface, and both raspotify and the Bluetooth audio player expose it, so the same button commands control whichever source is active. Drives the status LEDs (power, Bluetooth connected, playing state). Optionally drives a future SSD1306 OLED via the `luma.oled` Python library, displaying track metadata from MPRIS2.
+Reads the four rotary encoders and their push buttons via interrupts (not polling — important for responsiveness and low CPU usage). Translates encoder rotation into volume commands via `amixer` or PipeWire's `wpctl` for the volume dial. Translates button presses into MPRIS2 D-Bus commands for play/pause/next/previous — MPRIS2 is the standard Linux media player interface, and both raspotify and the Bluetooth audio player expose it, so the same button commands control whichever source is active. Drives the WS2812B RGB LED display behind the tuner window via the `rpi_ws281x` library over SPI.
 
 This daemon runs as a systemd service that starts on boot.
 
 ### Web Configuration Interface
 
-A lightweight Flask (Python) web server running on port 80. Accessible from any browser on the local network at `http://spotifoni.local/` (via mDNS/Avahi). It provides WiFi configuration (scan for networks, enter credentials, save to wpa_supplicant or NetworkManager), Spotify device name and audio settings, Bluetooth pairing management (list paired devices, remove pairings, toggle discoverability), system controls (restart services, reboot, shutdown safely), and optionally a simple volume slider and transport controls as a web remote.
+A lightweight Flask (Python) web server running on port 80. Accessible from any browser on the local network at `http://spotifoni.local/` (via mDNS/Avahi). It provides WiFi configuration (scan for networks, enter credentials, save to wpa_supplicant or NetworkManager), Spotify device name and audio settings, Bluetooth pairing management (list paired devices, remove pairings, toggle discoverability), system controls (restart services, reboot, shutdown safely), and a volume slider and transport controls as a web remote.
 
-For the initial build this can be very bare-bones — even a single page with a few forms. It grows naturally as features are added.
+This can be very bare-bones — even a single page with a few forms. It grows naturally as features are added.
 
 ### Power Management
 
@@ -126,20 +130,21 @@ With a read-only filesystem, the back-panel power switch can just cut power dire
 | 4× KY-040 Rotary Encoders | Ordered | ~$6 |
 | Visaton FR 10 HM, 4Ω | Ordered | ~$15 |
 | Mean Well IRM-15-5 (5V 3A PSU) | To order | ~$10 |
-| Status LEDs (3×) + 330Ω resistors | To order | ~$2 |
+| WS2812B 5050 RGB LED sticks (8 LEDs each) | Ordered | ~$4 |
+| 74AHCT125 level shifter | To order | ~$2 |
+| 1000µF electrolytic capacitor | To order | ~$1 |
 | MicroSD card (32 GB) | To order | ~$6 |
 | IEC C14 power inlet | To order | ~$3 |
 | Fuse holder + 1A slow-blow fuse | To order | ~$2 |
 | Speaker adapter ring material (plywood/MDF) | To fabricate | ~$3 |
 | Hook-up wire, connectors, standoffs, heat shrink | To order | ~$8 |
-| SSD1306 128×32 OLED (optional, for future) | To order | ~$4 |
 
 **Total: approximately $65 CAD** (less if parts are on hand; Pi is free since it's existing stock).
 
 
 ## Physical Integration Plan
 
-Strip the Marconi 378's original internals (tube chassis, original transformer, original wiring). Preserve the original field-coil speaker (store for potential future restoration), the dial mechanisms, and all decorative elements. Document everything with photos before removing — reference original mounting positions.
+Strip the Marconi 378's original internals (tube chassis, original transformer, original wiring). Preserve the original field-coil speaker, the dial mechanisms, and all decorative elements. Document everything with photos before removing — reference original mounting positions.
 
 Mount the Pi and amp board to a small piece of acrylic, plywood, or 3D-printed bracket that attaches to existing screw holes or standoffs inside the cabinet. Keep the microSD card slot accessible for reflashing.
 
@@ -152,23 +157,13 @@ Run the power cord through the original cord entry point. Mount the IEC C14 inle
 Route wiring neatly with zip ties or cable lacing. Keep mains AC wiring physically separated from low-voltage DC signal wiring. Use JST connectors for serviceability so components can be disconnected without desoldering.
 
 
-## Build Phases
+## Build Roadmap
 
-**Phase 1 — Proof of Concept (on the bench, outside the radio)**
+**Bench validation** — Get the Pi 3B running headless with SSH access. Install raspotify, confirm Spotify Connect works with the FR 10 HM connected via the MAX98357A. Set up Bluetooth A2DP sink and confirm phone audio plays through the same output. Wire up all four encoders and the WS2812B LED display on a breadboard. Write the full GPIO control daemon with MPRIS2 integration. Set up PipeWire for audio source switching. Build the basic web config interface. Configure read-only filesystem.
 
-Get the Pi 3B running headless with SSH access. Install raspotify, confirm Spotify Connect works with the FR 10 HM connected via the MAX98357A. Set up Bluetooth A2DP sink and confirm phone audio plays through the same output. Write a basic GPIO script that reads one encoder and controls volume. Estimated time: one weekend.
+**Physical integration** — Strip the radio. Fabricate the speaker adapter ring and encoder mounts. Build the internal component bracket. Transfer everything from the breadboard into the cabinet. Solder permanent connections or crimp JST connectors. Test everything in-cabinet, adjust LED brightness and encoder feel.
 
-**Phase 2 — Full Controls and Software**
-
-Wire up all four encoders and the status LEDs on a breadboard. Write the full GPIO control daemon with MPRIS2 integration. Set up PipeWire for audio source switching. Build the basic web config interface. Configure read-only filesystem. Estimated time: one to two weekends.
-
-**Phase 3 — Physical Integration**
-
-Strip the radio. Fabricate the speaker adapter ring and encoder mounts. Build the internal component bracket. Transfer everything from the breadboard into the cabinet. Solder permanent connections or crimp JST connectors. Test everything in-cabinet, adjust LED brightness and encoder feel. Estimated time: one to two weekends depending on mechanical challenges.
-
-**Phase 4 — Polish**
-
-Tune the audio (EQ settings in PipeWire to compensate for the speaker and cabinet characteristics). Refine the web interface. Add the OLED if desired. Set up mDNS so the web UI is reachable at `marconi378.local`. Final cable management and cleanup.
+**Polish** — Tune the audio (EQ settings in PipeWire to compensate for the speaker and cabinet characteristics). Refine the web interface. Set up mDNS so the web UI is reachable at `marconi378.local`. Final cable management and cleanup.
 
 
 ## Future Upgrades

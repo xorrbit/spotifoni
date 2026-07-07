@@ -18,6 +18,7 @@ AUDIO_OUTPUTS = {
 
 _mock_state = {
     "volume": 50,
+    "muted": False,
     "services": {"raspotify": "active", "spotifoni-controls": "active", "bluetooth": "active"},
     "devices": [
         {"mac": "AA:BB:CC:DD:EE:01", "name": "Andrew's iPhone"},
@@ -98,6 +99,33 @@ def system_action(action):
         subprocess.Popen(["sudo", "reboot"])
     else:
         subprocess.Popen(["sudo", "shutdown", "-h", "now"])
+    return jsonify({"ok": True})
+
+
+@app.route("/api/transport/<action>", methods=["POST"])
+def transport_action(action):
+    commands = {
+        "play-pause": "PlayPause",
+        "next": "Next",
+        "previous": "Previous",
+    }
+    if action not in commands:
+        return jsonify({"error": "unknown action"}), 400
+    if DEV_MODE:
+        return jsonify({"ok": True, "dev": f"{action} simulated"})
+    run_cmd(["dbus-send", "--print-reply",
+             "--dest=org.mpris.MediaPlayer2.raspotify",
+             "/org/mpris/MediaPlayer2",
+             f"org.mpris.MediaPlayer2.Player.{commands[action]}"])
+    return jsonify({"ok": True})
+
+
+@app.route("/api/volume/mute", methods=["POST"])
+def toggle_mute():
+    if DEV_MODE:
+        _mock_state["muted"] = not _mock_state["muted"]
+        return jsonify({"ok": True, "muted": _mock_state["muted"]})
+    run_cmd(["amixer", "sset", "Master", "toggle"])
     return jsonify({"ok": True})
 
 
