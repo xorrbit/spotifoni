@@ -24,6 +24,12 @@ rsync -avz --delete \
     "pi@${HOST}:${REMOTE_DIR}/web/" \
     --rsync-path="sudo rsync"
 
+info "Syncing config to ${HOST}"
+rsync -avz --ignore-existing \
+    "${REPO_DIR}/config/" \
+    "pi@${HOST}:${REMOTE_DIR}/config/" \
+    --rsync-path="sudo rsync"
+
 info "Restarting services"
 ssh "pi@${HOST}" "sudo systemctl restart spotifoni-controls spotifoni-web"
 

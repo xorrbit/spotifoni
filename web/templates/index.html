@@ -66,6 +66,18 @@
   .transport .play-btn { width: 56px; height: 56px; font-size: 24px; border-color: var(--accent); }
   .mute-btn { font-size: 12px; }
   .mute-btn.muted { color: var(--err); border-color: var(--err); }
+  input[type=text] {
+    font-family: ui-monospace, monospace; font-size: 13px;
+    width: 100%; padding: 8px 10px; border-radius: 4px;
+    border: 1px solid var(--border); background: var(--bg);
+    color: var(--text); box-sizing: border-box;
+  }
+  input[type=text]::placeholder { color: var(--text-sec); }
+  input[type=text]:focus { outline: none; border-color: var(--accent); }
+  .play-form { display: flex; gap: 8px; }
+  .play-form input[type=text] { flex: 1; }
+  .spotify-info { font-size: 13px; color: var(--text-sec); margin-bottom: 8px; }
+  .spotify-error { font-size: 13px; color: var(--err); margin-top: 8px; }
 </style>
 
 <span class="eyebrow">Spotifoni</span>
@@ -82,6 +94,21 @@
     <button onclick="transport('previous')">&#9198;</button>
     <button class="play-btn" onclick="transport('play-pause')">&#9199;</button>
     <button onclick="transport('next')">&#9197;</button>
+  </div>
+</div>
+
+<div class="card" id="spotify-card">
+  <h2>Standalone Playback</h2>
+  <div id="spotify-status" class="spotify-info">Loading...</div>
+  <div id="spotify-connect" style="display:none;">
+    <button onclick="spotifyAuth()">Connect Spotify Account</button>
+  </div>
+  <div id="spotify-controls" style="display:none;">
+    <div class="play-form">
+      <input type="text" id="spotify-url" placeholder="Paste playlist, album, or track URL">
+      <button onclick="spotifyPlay()">Play</button>
+    </div>
+    <div id="spotify-error" class="spotify-error" style="display:none;"></div>
   </div>
 </div>
 
@@ -183,8 +210,54 @@ async function setOutput(key) {
   loadAudioOutput();
 }
 
+async function loadSpotifyStatus() {
+  try {
+    const r = await fetch('/api/spotify/status');
+    const d = await r.json();
+    const statusEl = document.getElementById('spotify-status');
+    const connectEl = document.getElementById('spotify-connect');
+    const controlsEl = document.getElementById('spotify-controls');
+    if (!d.config_present) {
+      statusEl.textContent = 'Spotify API not configured';
+      connectEl.style.display = 'none';
+      controlsEl.style.display = 'none';
+    } else if (!d.authenticated) {
+      statusEl.textContent = 'Account not connected';
+      connectEl.style.display = '';
+      controlsEl.style.display = 'none';
+    } else {
+      statusEl.textContent = 'Connected as ' + d.user;
+      connectEl.style.display = 'none';
+      controlsEl.style.display = '';
+    }
+  } catch (e) { console.error(e); }
+}
+function spotifyAuth() { window.location.href = '/api/spotify/auth'; }
+async function spotifyPlay() {
+  const input = document.getElementById('spotify-url');
+  const errEl = document.getElementById('spotify-error');
+  const url = input.value.trim();
+  if (!url) return;
+  errEl.style.display = 'none';
+  try {
+    const r = await fetch('/api/spotify/play', {method: 'POST',
+      headers: {'Content-Type': 'application/json'}, body: JSON.stringify({url})});
+    const d = await r.json();
+    if (d.error) {
+      errEl.textContent = d.error;
+      errEl.style.display = '';
+    } else {
+      input.value = '';
+    }
+  } catch (e) {
+    errEl.textContent = 'Request failed';
+    errEl.style.display = '';
+  }
+}
+
 loadStatus();
 loadDevices();
 loadAudioOutput();
+loadSpotifyStatus();
 setInterval(loadStatus, 10000);
 </script>

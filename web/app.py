@@ -4,11 +4,13 @@
 import os
 import shutil
 import subprocess
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect
+import spotify
 
 app = Flask(__name__)
 
 DEV_MODE = os.environ.get("SPOTIFONI_DEV") == "1" or not os.path.exists("/sys/firmware/devicetree/base/model")
+spotify.DEV_MODE = DEV_MODE
 
 ASOUND_CONF = "/etc/asound.conf"
 AUDIO_OUTPUTS = {
@@ -187,6 +189,48 @@ def set_audio_output():
     else:
         _set_audio_output(key)
     return jsonify({"ok": True, "current": key})
+
+
+@app.route("/api/spotify/status")
+def spotify_status():
+    return jsonify(spotify.get_status())
+
+
+@app.route("/api/spotify/auth")
+def spotify_auth():
+    url = spotify.get_auth_url()
+    if not url:
+        return jsonify({"error": "Spotify API not configured"}), 400
+    return redirect(url)
+
+
+@app.route("/api/spotify/callback")
+def spotify_callback():
+    code = request.args.get("code")
+    error = request.args.get("error")
+    if error:
+        return f"Authorization denied: {error}", 400
+    if not code:
+        return "Missing authorization code", 400
+    result = spotify.handle_callback(code)
+    if result is True:
+        return redirect("/")
+    return f"Authorization failed: {result}", 500
+
+
+@app.route("/api/spotify/play", methods=["POST"])
+def spotify_play():
+    url = request.json.get("url", "")
+    result = spotify.play_content(url)
+    if "error" in result:
+        return jsonify(result), 400
+    return jsonify(result)
+
+
+@app.route("/api/spotify/disconnect", methods=["POST"])
+def spotify_disconnect():
+    spotify.disconnect()
+    return jsonify({"ok": True})
 
 
 if __name__ == "__main__":

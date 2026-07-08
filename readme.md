@@ -68,6 +68,22 @@ This rsyncs the GPIO daemon and web app to the Pi and restarts both services.
 | Web UI | `http://spotifoni.local/` — service status, volume, Bluetooth devices, system controls |
 | SSH | `ssh pi@spotifoni.local` |
 
+### Standalone Playback (without a phone)
+
+Requires a Spotify Premium account.
+
+1. Create a Spotify Developer App at https://developer.spotify.com/dashboard
+2. Add `http://spotifoni.local/api/spotify/callback` as a redirect URI
+3. Copy `config/spotify_api.json.example` to `config/spotify_api.json` and fill in `client_id` and `client_secret`
+4. Deploy to the Pi (`./deploy.sh`)
+5. Open `http://spotifoni.local/` and click **Connect Spotify Account**
+6. Log in with your Spotify Premium account and authorize
+7. Connect to **Marconi 378** once from any Spotify app (phone, desktop, or web player) to register the device with your account
+
+After setup, paste any Spotify playlist, album, or track URL into the **Standalone Playback** card and press **Play**. No phone needed.
+
+> **Tip:** To skip step 7, add `LIBRESPOT_USERNAME` and `LIBRESPOT_PASSWORD` to `/etc/raspotify/conf`. This makes the device register with Spotify automatically on boot.
+
 ### Physical Controls
 
 - **Volume dial** — rotate to adjust volume, press to toggle mute

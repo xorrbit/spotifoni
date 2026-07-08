@@ -35,6 +35,9 @@ apt-get install -y -qq \
 info "Installing WS2812B LED library"
 pip3 install --break-system-packages rpi-ws281x
 
+info "Installing Spotify Web API library"
+pip3 install --break-system-packages spotipy
+
 # ── Raspotify ────────────────────────────────────────────────────────────────
 
 if ! command -v raspotify &>/dev/null; then
@@ -48,10 +51,13 @@ fi
 
 info "Deploying Spotifoni to ${SPOTIFONI_DIR}"
 mkdir -p "${SPOTIFONI_DIR}"
+mkdir -p "${SPOTIFONI_DIR}/data"
 rsync -a --delete \
     "${REPO_DIR}/gpio-daemon/" "${SPOTIFONI_DIR}/gpio-daemon/"
 rsync -a --delete \
     "${REPO_DIR}/web/" "${SPOTIFONI_DIR}/web/"
+rsync -a --ignore-existing \
+    "${REPO_DIR}/config/" "${SPOTIFONI_DIR}/config/"
 
 # ── Configuration ────────────────────────────────────────────────────────────
 
