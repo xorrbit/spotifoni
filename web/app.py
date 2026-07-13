@@ -66,12 +66,25 @@ def status():
 
 @app.route("/api/volume", methods=["POST"])
 def set_volume():
-    level = request.json.get("level")
-    if level is not None:
-        if DEV_MODE:
+    data = request.json or {}
+    level = data.get("level")
+    delta = data.get("delta")
+
+    if DEV_MODE:
+        if delta is not None:
+            _mock_state["volume"] = max(0, min(100, _mock_state["volume"] + int(delta)))
+        elif level is not None:
             _mock_state["volume"] = int(level)
-        else:
-            run_cmd(["amixer", "sset", "Master", f"{int(level)}%"])
+        return jsonify({"ok": True, "volume": _mock_state["volume"]})
+
+    if delta is not None:
+        current = spotify.get_volume()
+        if current is not None:
+            level = max(0, min(100, current + int(delta)))
+
+    if level is not None:
+        spotify.set_volume(int(level))
+
     return jsonify({"ok": True})
 
 
@@ -106,28 +119,38 @@ def system_action(action):
 
 @app.route("/api/transport/<action>", methods=["POST"])
 def transport_action(action):
-    commands = {
-        "play-pause": "PlayPause",
-        "next": "Next",
-        "previous": "Previous",
+    actions = {
+        "play-pause": spotify.play_pause,
+        "next": spotify.next_track,
+        "previous": spotify.previous_track,
     }
-    if action not in commands:
+    if action not in actions:
         return jsonify({"error": "unknown action"}), 400
     if DEV_MODE:
         return jsonify({"ok": True, "dev": f"{action} simulated"})
-    run_cmd(["dbus-send", "--print-reply",
-             "--dest=org.mpris.MediaPlayer2.raspotify",
-             "/org/mpris/MediaPlayer2",
-             f"org.mpris.MediaPlayer2.Player.{commands[action]}"])
+    result = actions[action]()
+    if not result:
+        return jsonify({"error": "Spotify API call failed"}), 500
     return jsonify({"ok": True})
+
+
+_pre_mute_volume = None
 
 
 @app.route("/api/volume/mute", methods=["POST"])
 def toggle_mute():
+    global _pre_mute_volume
     if DEV_MODE:
         _mock_state["muted"] = not _mock_state["muted"]
         return jsonify({"ok": True, "muted": _mock_state["muted"]})
-    run_cmd(["amixer", "sset", "Master", "toggle"])
+    current = spotify.get_volume()
+    if current is None:
+        return jsonify({"ok": False})
+    if current > 0:
+        _pre_mute_volume = current
+        spotify.set_volume(0)
+    else:
+        spotify.set_volume(_pre_mute_volume if _pre_mute_volume else 50)
     return jsonify({"ok": True})
 
 
@@ -160,7 +183,14 @@ def _set_audio_output(key):
     card = AUDIO_OUTPUTS[key]["card"]
     conf = (f"# /etc/asound.conf — managed by Spotifoni\n"
             f"# Current output: {key}\n\n"
-            f"pcm.!default {{\n    type hw\n    card {card}\n}}\n\n"
+            f"pcm.!default {{\n"
+            f"    type softvol\n"
+            f"    slave.pcm \"hw:{card}\"\n"
+            f"    control {{\n"
+            f"        name \"Master\"\n"
+            f"        card {card}\n"
+            f"    }}\n"
+            f"}}\n\n"
             f"ctl.!default {{\n    type hw\n    card {card}\n}}\n")
     with open(ASOUND_CONF, "w") as f:
         f.write(conf)

@@ -174,6 +174,88 @@ def play_content(url):
         return {"error": f"Playback failed: {msg}"}
 
 
+
+def pause(sp=None):
+    sp = sp or get_client()
+    if not sp:
+        return False
+    try:
+        sp.pause_playback()
+        return True
+    except Exception:
+        return False
+
+
+def resume(sp=None):
+    sp = sp or get_client()
+    if not sp:
+        return False
+    try:
+        sp.start_playback()
+        return True
+    except Exception:
+        return False
+
+
+def play_pause():
+    sp = get_client()
+    if not sp:
+        return False
+    try:
+        playback = sp.current_playback()
+        if playback and playback.get("is_playing"):
+            return pause(sp)
+        return resume(sp)
+    except Exception:
+        return False
+
+
+def next_track():
+    sp = get_client()
+    if not sp:
+        return False
+    try:
+        sp.next_track()
+        return True
+    except Exception:
+        return False
+
+
+def previous_track():
+    sp = get_client()
+    if not sp:
+        return False
+    try:
+        sp.previous_track()
+        return True
+    except Exception:
+        return False
+
+
+def get_volume():
+    sp = get_client()
+    if not sp:
+        return None
+    try:
+        playback = sp.current_playback()
+        if playback and playback.get("device"):
+            return playback["device"].get("volume_percent")
+    except Exception:
+        pass
+    return None
+
+
+def set_volume(percent):
+    sp = get_client()
+    if not sp:
+        return False
+    try:
+        sp.volume(max(0, min(100, int(percent))))
+        return True
+    except Exception:
+        return False
+
+
 def disconnect():
     try:
         os.remove(_cache_path())
